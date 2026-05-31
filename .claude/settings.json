@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Agent",
+      "Monitor",
+      "PowerShell",
+      "NotebookEdit",
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(npm run *)",
+      "mcp_sequential-thinking",
+      "mcp_shadcn"
+    ],
+    "defaultMode": "acceptEdits"
+  },
+  "hooks": {
+    "PostToolUseFailure": [
+      {
+        "matcher": "Bash(npm run *)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🚨 빌드 실패! 오류 로그를 확인하고 수정해주세요'",
+            "statusMessage": "빌드 실패 알림 표시 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
