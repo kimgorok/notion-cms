@@ -182,14 +182,15 @@
 
 **Task 2.1.3: Notion API 연동 동작 검증**
 
-- 설명: 간단한 테스트 스크립트 또는 임시 API 라우트(`app/api/test/route.ts`)를 작성하여 세 함수가 실제 Notion 데이터를 반환하는지 확인한다. 검증 완료 후 테스트 라우트는 제거한다
+- 설명: Playwright MCP를 사용한 브라우저 자동화 테스트를 작성하여 세 함수가 실제 Notion 데이터를 정상 반환하는지 검증한다. 간단한 테스트 페이지 또는 임시 API 라우트(`app/api/test/route.ts`)를 생성하여 테스트하고, 검증 완료 후 삭제한다
 - 스토리 포인트: 1
 - 담당 역할: Full-stack
 - 선행 작업: Task 2.1.2
 - 수락 기준:
-  - `getPosts()`가 샘플 글 3개 이상을 반환하는 것을 브라우저 또는 콘솔에서 확인한다
-  - `getPageBlocks()`가 블록 데이터를 반환하는 것을 확인한다
-  - 테스트 후 임시 라우트가 삭제되어 있다
+  - Playwright MCP를 사용하여 `getPosts()`의 응답 검증 (샘플 글 3개 이상 반환)
+  - `getPageBlocks()`가 블록 데이터를 정상 반환하는지 확인
+  - 테스트 페이지/라우트에서 데이터 로딩 및 렌더링이 성공함을 Playwright로 확인
+  - 테스트 후 임시 라우트 또는 테스트 페이지가 완전히 삭제되어 있다
 
 ---
 
@@ -250,7 +251,7 @@
 
 **Task 3.2.1: 홈 페이지(`app/page.tsx`) 구현**
 
-- 설명: `app/page.tsx`에서 `getPosts()`를 호출하여 글 목록을 조회한다. URL 쿼리 파라미터의 `category` 값으로 글 목록을 필터링하여 표시한다. 글 목록은 3열(데스크톱) 그리드로 배치한다. ISR `revalidate: 60`을 설정한다
+- 설명: `app/page.tsx`에서 `getPosts()`를 호출하여 글 목록을 조회한다. URL 쿼리 파라미터의 `category` 값으로 글 목록을 필터링하여 표시한다. 글 목록은 3열(데스크톱) 그리드로 배치한다. ISR `revalidate: 60`을 설정한다. 구현 후 Playwright MCP로 브라우저 테스트를 수행한다
 - 파일 위치: `app/page.tsx`
 - 스토리 포인트: 3
 - 담당 역할: Full-stack
@@ -261,6 +262,7 @@
   - `revalidate = 60`이 설정되어 있다
   - 글이 없을 때 빈 상태 메시지가 표시된다
   - Hero 섹션(블로그 소개 문구)이 상단에 표시된다
+  - **테스트**: Playwright MCP로 홈 페이지 로드 및 글 목록 렌더링 검증, 카테고리 필터 클릭 동작 검증
 
 ---
 
@@ -305,7 +307,7 @@
 
 **Task 4.1.2: 글 상세 페이지(`app/posts/[slug]/page.tsx`) 구현**
 
-- 설명: `getPost()`와 `getPageBlocks()`를 호출하여 글 메타데이터와 본문을 조회한다. `NotionRenderer`로 본문을 렌더링한다. PRD 와이어프레임에 따라 뒤로가기 버튼, 글 제목(H1), 카테고리 배지, 태그 목록, 발행일을 표시한다. `generateMetadata()`로 og:title, og:description을 설정한다. ISR `revalidate: 60`을 설정한다
+- 설명: `getPost()`와 `getPageBlocks()`를 호출하여 글 메타데이터와 본문을 조회한다. `NotionRenderer`로 본문을 렌더링한다. PRD 와이어프레임에 따라 뒤로가기 버튼, 글 제목(H1), 카테고리 배지, 태그 목록, 발행일을 표시한다. `generateMetadata()`로 og:title, og:description을 설정한다. ISR `revalidate: 60`을 설정한다. 구현 후 Playwright MCP로 렌더링 및 메타데이터 검증을 수행한다
 - 파일 위치: `app/posts/[slug]/page.tsx`
 - 스토리 포인트: 5
 - 담당 역할: Full-stack
@@ -317,6 +319,7 @@
   - `generateMetadata()`에서 `og:title`과 `og:description`이 글 데이터로 설정된다
   - 존재하지 않는 slug는 `notFound()`로 404 처리된다
   - `revalidate = 60`이 설정되어 있다
+  - **테스트**: Playwright MCP로 글 상세 페이지 로드 및 내용 렌더링 검증, 메타데이터(og:title, og:description) 검증, 뒤로가기 네비게이션 동작 검증
 
 ---
 
@@ -372,7 +375,7 @@
 
 **Task 5.1.3: 검색 기능 구현**
 
-- 설명: 헤더 또는 홈 페이지에 검색 입력창을 추가하고, 클라이언트 사이드에서 글 제목 기준으로 실시간 필터링을 구현한다. `useState`와 `useMemo`를 활용하여 검색어가 변경될 때마다 목록을 필터링한다. 검색은 대소문자 구분 없이 동작한다
+- 설명: 헤더 또는 홈 페이지에 검색 입력창을 추가하고, 클라이언트 사이드에서 글 제목 기준으로 실시간 필터링을 구현한다. `useState`와 `useMemo`를 활용하여 검색어가 변경될 때마다 목록을 필터링한다. 검색은 대소문자 구분 없이 동작한다. 구현 후 Playwright MCP로 검색 동작 검증을 수행한다
 - 파일 위치: `components/blog/SearchInput.tsx`, `app/page.tsx` (통합)
 - 스토리 포인트: 3
 - 담당 역할: Frontend
@@ -383,6 +386,7 @@
   - 검색 결과가 없을 때 안내 메시지가 표시된다
   - 검색어를 지우면 전체 목록이 복원된다
   - 카테고리 필터와 검색이 동시에 동작한다
+  - **테스트**: Playwright MCP로 검색창 입력, 실시간 필터링 동작, 검색 결과 없음 상태 검증
 
 ---
 
@@ -390,14 +394,14 @@
 
 **Task 5.2.1: Vercel 배포 설정**
 
-- 설명: Vercel에 프로젝트를 연결하고 환경변수를 설정한다. `NOTION_API_KEY`, `NOTION_DATABASE_ID`를 Vercel 대시보드에 등록한다. 배포 후 공개 URL에서 전체 기능을 검증한다
+- 설명: Vercel에 프로젝트를 연결하고 환경변수를 설정한다. `NOTION_API_KEY`, `NOTION_DATABASE_ID`를 Vercel 대시보드에 등록한다. 배포 후 공개 URL에서 Playwright MCP를 사용한 E2E 테스트를 수행하여 전체 기능을 검증한다
 - 스토리 포인트: 2
 - 담당 역할: DevOps/Full-stack
 - 선행 작업: Task 5.1.1, Task 5.1.2, Task 5.1.3
 - 수락 기준:
   - Vercel 배포가 성공하고 공개 URL이 생성된다
   - Vercel 환경변수에 `NOTION_API_KEY`, `NOTION_DATABASE_ID`가 등록되어 있다
-  - 공개 URL에서 글 목록, 글 상세, 카테고리 필터, 검색이 모두 동작한다
+  - **Playwright MCP E2E 테스트**: 공개 URL에서 글 목록 로드, 글 상세 페이지 접근, 카테고리 필터 동작, 검색 기능 동작 모두 검증
   - Notion API 키가 클라이언트 번들에 노출되지 않는다 (Chrome DevTools 소스 탭 확인)
 
 ---
@@ -441,7 +445,7 @@
 
 **Task 6.2.1: RSS 피드 구현**
 
-- 설명: `/rss.xml` 경로에서 RSS 피드를 제공하는 API 라우트를 구현한다. `getPosts()`로 글 목록을 조회하고, RSS 2.0 형식의 XML을 반환한다
+- 설명: `/rss.xml` 경로에서 RSS 피드를 제공하는 API 라우트를 구현한다. `getPosts()`로 글 목록을 조회하고, RSS 2.0 형식의 XML을 반환한다. 구현 후 Playwright MCP로 RSS 엔드포인트 응답 및 콘텐츠 검증을 수행한다
 - 파일 위치: `app/rss.xml/route.ts`
 - 스토리 포인트: 3
 - 담당 역할: Full-stack
@@ -449,6 +453,7 @@
 - 수락 기준:
   - `/rss.xml` URL이 유효한 RSS 2.0 형식의 XML을 반환한다
   - 각 item에 title, link, description, pubDate가 포함된다
+  - **테스트**: Playwright MCP로 RSS 엔드포인트 요청, XML 응답 구조 검증, 포함된 아이템 수 확인
   - RSS 피드 유효성 검사 도구(예: W3C Feed Validator)를 통과한다
 
 ---
@@ -492,6 +497,34 @@ Task 1.2.1 (Notion 설정) ──── Task 1.2.2 (샘플 콘텐츠)
 | Phase 1 | Task 1.1.3 (타입 정의)와 Task 1.2.x (Notion 설정) 병렬 진행 가능 |
 | Phase 3 초반 | Task 3.1.1 (헤더/푸터), Task 3.1.2 (PostCard), Task 3.1.3 (CategoryFilter) 병렬 가능 |
 | Phase 4~5 | Task 5.1.2 (타이포그래피)는 Task 4.1.1 완료 후 즉시 병렬 시작 가능 |
+
+---
+
+## 5.5. 테스트 전략 (Playwright MCP 활용)
+
+이 로드맵의 모든 Task는 **구현 후 반드시 테스트를 수행**합니다. API 연동 및 비즈니스 로직이 포함된 작업은 다음 테스트 절차를 따릅니다:
+
+### 필수 테스트 순서
+
+1. **개발 서버 실행**: `npm run dev` (localhost:3000)
+2. **Playwright MCP 브라우저 자동화 테스트** 수행
+3. **핵심 시나리오(골든 패스) 검증** - 정상 경로 동작 확인
+4. **엣지 케이스 및 오류 상황 검증** - 예외 처리 동작 확인
+5. **회귀 테스트** - 기존 기능 영향 여부 확인
+
+### Playwright MCP 사용 기준
+
+다음 작업들은 **필수적으로** Playwright MCP 테스트를 수행합니다:
+
+- **Phase 2**: Task 2.1.3 (Notion API 연동 동작 검증)
+- **Phase 3**: Task 3.2.1 (홈 페이지), Task 3.2.2 (카테고리 페이지)
+- **Phase 4**: Task 4.1.2 (글 상세 페이지), Task 4.1.3 (정적 생성)
+- **Phase 5**: Task 5.1.3 (검색 기능), Task 5.2.1 (Vercel 배포 E2E), Task 5.2.2 (최종 검증)
+- **Phase 6**: Task 6.2.1 (RSS 피드)
+
+### 테스트 없이 완료로 간주하지 않습니다
+
+> 구현이 완성되었더라도 Playwright MCP 테스트를 통과하지 않으면 해당 Task는 **완료(Done) 상태가 아닙니다**.
 
 ---
 
@@ -549,6 +582,8 @@ Task 1.2.1 (Notion 설정) ──── Task 1.2.2 (샘플 콘텐츠)
 - [ ] `npm run lint`가 경고 없이 통과한다
 - [ ] TypeScript strict 모드에서 타입 오류가 없다
 - [ ] `npm run dev`에서 변경 사항을 시각적으로 확인했다
+- [ ] API 연동·비즈니스 로직 포함 작업은 Playwright MCP 테스트를 수행했다
+- [ ] 테스트 없이는 작업을 완료로 표기하지 않는다
 - [ ] 커밋 메시지가 컨벤셔널 커밋 + 이모지 형식을 준수한다
 
 ---
