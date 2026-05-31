@@ -1,5 +1,11 @@
 # CLAUDE.md
 
+**개인 개발 블로그** — Notion을 CMS로 활용한 Claude AI 기술 블로그 (Next.js 15 + Notion API)
+
+📋 상세 프로젝트 요구사항은 @/docs/PRD.md 참조
+
+---
+
 Claude Code가 이 저장소의 코드로 작업할 때 참고하는 종합 지침서입니다.
 
 ## 프로젝트 개요
